@@ -28,32 +28,35 @@ export function useOpinionVerifierContract() {
   }, [client, wallet]);
 
 
-  const { isDeployed } = useQuery(
-    ["OpinionVerifier"],
-    async () => {
-      if (!OpinionVerifierContract) return null;
-      if (!client) return null;
-      return (await client.isContractDeployed(OpinionVerifierContract.address));
-    },
-    { refetchInterval: 3000 }
-  );
+  // const { isDeployed, isFetchingDeployed } = useQuery(
+  //   ["OpinionVerifier"],
+  //   async () => {
+  //     if (!OpinionVerifierContract) return null;
+  //     if (!client) return null;
+  //     return (await client.isContractDeployed(OpinionVerifierContract.address));
+  //   },
+  //   { refetchInterval: 3000 }
+  // );
 
   const { data, isFetching } = useQuery(
     ["OpinionVerifier"],
     async () => {
       if (!OpinionVerifierContract) return null;
-      return (await OpinionVerifierContract!.getInfo()).hash.toString();
+      return (await OpinionVerifierContract!.getInfo()).hash.toString(16);
     },
-    { refetchInterval: 3000 }
+    { refetchInterval: 5000 }
   );
 
   return {
     value: isFetching ? null : data,
-    deployed: isDeployed ? null : isDeployed,
+    // deployed: isDeployed ? null : isDeployed,
     address: OpinionVerifierContract?.address.toString(),
-    sendPredictionString: () => {
+    sendPredictionString: (predictionString: string) => {
+      console.log(predictionString, sender)
       if (!sender) {return}
-      return OpinionVerifierContract?.sendPredictionString(sender, "teststring");
+      if (!predictionString) {return}
+      
+      return OpinionVerifierContract?.sendPredictionString(sender, predictionString);
     },
     sendDeploy: () => {
       if (!sender) {return}

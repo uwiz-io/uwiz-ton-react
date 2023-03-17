@@ -1,6 +1,7 @@
 import { TonConnectButton } from "@tonconnect/ui-react";
 import { useOpinionVerifierContract } from "../hooks/useOpinionVerifierContract";
 import { useTonConnect } from "../hooks/useTonConnect";
+import { useState } from "react";
 
 import {
   Card,
@@ -8,11 +9,16 @@ import {
   FlexBoxRow,
   Ellipsis,
   Button,
+  Input,
 } from "./styled/styled";
 
 export function OpinionVerifier() {
   const { connected } = useTonConnect();
-  const { value, address, deployed, sendPredictionString, sendDeploy } = useOpinionVerifierContract();
+  const { value, address, sendPredictionString, sendDeploy, getStatus } =
+    useOpinionVerifierContract();
+
+  const [perdictionString, setPerdictionString] = useState("41 Dash buy 1677053952 1677054040 69.71 USDT");
+
 
   return (
     <div className="Container">
@@ -26,20 +32,29 @@ export function OpinionVerifier() {
             <Ellipsis>{address}</Ellipsis>
           </FlexBoxRow>
           <FlexBoxRow>
-            <b>Value</b>
-            <div>{value ?? "Loading..."}</div>
+            <b>Current stored hash: </b>
+            <pre>{value ?? "Loading..."}</pre>
           </FlexBoxRow>
+          <FlexBoxRow>
+            <Input
+              style={{ marginRight: 8 }}
+              type="string"
+              value={perdictionString}
+              onChange={(e) => setPerdictionString(e.target.value)}
+            ></Input>
+          </FlexBoxRow>
+
           <Button
             disabled={!connected}
             className={`Button ${connected ? "Active" : "Disabled"}`}
             onClick={() => {
-              sendPredictionString();
+              sendPredictionString(perdictionString);
             }}
           >
-            Increment
+            Verify prediction string
           </Button>
           <Button
-            disabled={deployed}
+            disabled={true}
             className={`Button ${connected ? "Active" : "Disabled"}`}
             onClick={() => {
               sendDeploy();
