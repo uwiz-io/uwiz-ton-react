@@ -30,6 +30,11 @@ export default class OpinionVerifier implements Contract {
     };
   }
 
+
+  async getState(provider: ContractProvider) {
+    return await provider.getState()
+  }
+
   async sendPredictionString(provider: ContractProvider, via: Sender, string: string) {
     const messageBody = beginCell()
       .storeUint(OPS.receive_prediction_string, 32) // op

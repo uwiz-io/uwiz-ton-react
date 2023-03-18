@@ -23,6 +23,7 @@ export function useOpinionVerifierContract() {
 
     if (await client.isContractDeployed(contract.address)) {
       console.log("OpinionVerifier already deployed");
+    console.log(await client.getBalance(contract.address))
     }
     return client.open(contract) as OpenedContract<OpinionVerifier>;
   }, [client, wallet]);
@@ -47,10 +48,22 @@ export function useOpinionVerifierContract() {
     { refetchInterval: 5000 }
   );
 
+
+  const balance = useQuery(
+    ["OpinionVerifier"],
+    async () => {
+      if (!OpinionVerifierContract) return null;
+      return (await OpinionVerifierContract!.getState()).balance.toString();
+    },
+    { refetchInterval: 11000 }
+  );
+
+
   return {
     value: isFetching ? null : data,
     // deployed: isDeployed ? null : isDeployed,
     address: OpinionVerifierContract?.address.toString(),
+    balance: balance.isFetching ? null : balance.data, 
     sendPredictionString: (predictionString: string) => {
       console.log(predictionString, sender)
       if (!sender) {return}
